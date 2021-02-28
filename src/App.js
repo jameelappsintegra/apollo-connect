@@ -1,25 +1,28 @@
-import logo from './logo.svg';
+import React, { useState, useEffect } from "react";
 import './App.css';
+import { useQuery } from "@apollo/react-hooks";
+import Header from "./Header";
+import Posts from "./Posts";
+import { GET_ALL_POSTS } from "./graphql";
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+  const { data: postList } = useQuery(GET_ALL_POSTS);
+  const [postListItems, setPostListItems] = useState([]);
+  useEffect(() => {
+    if (postList) {
+      setPostListItems(postList.posts);
+    }
+  }, [postList]);
+  console.log(postListItems);
 
+  return (
+    <div>
+      <Header  title="Posts"/>
+      {postListItems && postListItems.map((item,i)=>(
+        <Posts key={item.id} postTitle={item.title} postDesc={item.description} />
+      ))
+      }
+    </div>
+  )
+}
 export default App;
